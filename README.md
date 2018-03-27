@@ -3,7 +3,7 @@
 Short installation guide on how to get your smartbee webservice up and running.
 If you plan on hosting your webservice in a VM, please proceed to the topic below [VM Configuration](https://github.com/GustavoCig/Smartbee-Comunication#VM-Configuration), else, proceed to the topic [Java Configuration](https://github.com/GustavoCig/Smartbee-Comunication#Java-Configuration).
 
-##VM Configuration
+## VM Configuration
 
 This topic mostly covers how to correct a VM's resolution inside **VirtualBox**, in case it's restrictive and impossible to change manually.
 
@@ -24,7 +24,7 @@ sudo sh ./VBoxLinuxAdditions.sh
 Finally, all that's left is to restart your VM and then see if it's resolution is configurable.
 You may need to change the resolution by change the actual VM's screen resolution instead of using VirtualBox's toolbar.
 
-##Java Configuration
+## Java Configuration
 
 Since Smartbee's webservice is developed in Java, the Java version that's going to be used to host the webservice needs to be the **same version used to build the .war file.**
 Otherwise, an major.minor version error might be thrown during execution.
@@ -46,7 +46,7 @@ Verify, after the procedure above, if java installed correctly.
 java -version
 ```
 
-##JBoss Installation
+## JBoss Installation
 
 To host this service we've been using **JBoss** as the service's server. Other servers might be just as usable as JBoss, however, no tests were made.
 
@@ -82,7 +82,7 @@ If no exceptions are thrown, your server just went online.
 
 - This procedure was tested with many versions of JBoss, from Wildfly 8 to Wildfly 11, all successful.
 
-##Building .war file.
+## Building .war file.
 
 - Building process was tested with Eclipse's Java EE IDE.
 
@@ -91,7 +91,7 @@ Inside the IDE go your project's folder, select it then, either through the tool
 From the list that appears in the following windor, choose the Web option, then WAR file option.
 All that's left is to choose in which directory you want your .war file created.
 
-##Transfering .war file.
+## Transfering .war file.
 
 We are going to base ourselves that FTP is needed to transfer your .war file to your server.
 If it's not necessary or your server already has a FTP Client installed, then continue to the next topic [Deploying .war](ttps://github.com/GustavoCig/Smartbee-Comunication#Deploying-.war)
@@ -115,7 +115,7 @@ Search for the write permissions and change or uncomment the line.
 
 Now connect to your server thorugh FTP and trasnfer the .war file.
 
-#Deploying .war
+# Deploying .war
 
 With the server online, we need to access it's CLI:
 ```
@@ -130,7 +130,7 @@ deploy {path}/webservice.war
 With this you are done configuring your server.
 Now all that's left is for you to seed your webservice's database, since the commands don't function or return empty values in a unseeded database.
 
-##Database
+## Database
 
 The database used by our service is MySQL.
 To install it, use these commands:
@@ -162,7 +162,7 @@ In this order.
 mysql>source {file path}/{file name}.sql;
 ```
 
-##Postman
+## Postman
 Postman is a HTTP client which can be used to test the service and it's function.
 To install it run the following commands:
 ```

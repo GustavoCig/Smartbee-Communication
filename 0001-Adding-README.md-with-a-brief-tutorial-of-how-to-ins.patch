@@ -1,0 +1,441 @@
+From 53ec9546dd4c157d3665312b020fa8455f443b87 Mon Sep 17 00:00:00 2001
+From: GustavoCig <gustavocignachi@hotmail.com>
+Date: Tue, 27 Mar 2018 13:51:31 -0300
+Subject: [PATCH] Adding README.md with a brief tutorial of how to install the
+ webservice
+
+Tutorial contains information on how to install and configure all softwares needed to use the smartbee webservice.
+
+Commit:Ref
+
+TaskNumber:
+---
+ README.md     | 173 ++++++++++++++++++++++++++++++++++++++++++++++++++-
+ config.sql    | 195 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ test_seed.sql |  33 ++++++++++
+ 3 files changed, 400 insertions(+), 1 deletion(-)
+ create mode 100644 config.sql
+ create mode 100644 test_seed.sql
+
+diff --git a/README.md b/README.md
+index 110a663..2ecd0e3 100644
+--- a/README.md
++++ b/README.md
+@@ -1 +1,172 @@
+-# Smartbee-Comunication
+\ No newline at end of file
++# Smartbee-Comunication
++
++Short installation guide on how to get your smartbee webservice up and running.
++If you plan on hosting your webservice in a VM, please proceed to the topic below [VM Configuration](https://github.com/GustavoCig/Smartbee-Comunication#VM-Configuration), else, proceed to the topic [Java Configuration](https://github.com/GustavoCig/Smartbee-Comunication#Java-Configuration).
++
++##VM Configuration
++
++This topic mostly covers how to correct a VM's resolution inside **VirtualBox**, in case it's restrictive and impossible to change manually.
++
++First install VirtualBox itself inside your VM, thus, installing the following drivers.
++```
++sudo apt-get update
++sudo apt-get install virtualbox
++```
++
++Then install VirtualBox's Guest Additions:
++With the VM started, go to the **toolbar at the top of the VM's window** and into **Options**
++**Mount the Guest Additions disk** then go inside the disk through the VM, as if it was a regular USB or CD/DVD being used in a regular computer.
++Then find and execute the correct script for your VM's OS, in case of it being a Linux distro(Ubuntu):
++```
++cd /media/{user name}/VBox.../
++sudo sh ./VBoxLinuxAdditions.sh
++``` 
++Finally, all that's left is to restart your VM and then see if it's resolution is configurable.
++You may need to change the resolution by change the actual VM's screen resolution instead of using VirtualBox's toolbar.
++
++##Java Configuration
++
++Since Smartbee's webservice is developed in Java, the Java version that's going to be used to host the webservice needs to be the **same version used to build the .war file.**
++Otherwise, an major.minor version error might be thrown during execution.
++
++Therefore, install the appropriate version, but, for the sake of this tutorial, we are going to follow through the installation steps for a Linux distro(Ubuntu):
++```
++sudo add-apt-repository ppa:webupd8team/java
++sudo apt-get update
++sudo apt-get install oracle-java{version-number}-installer
++```
++- Java 7's installation using the method above threw an exception, interrupting it.
++Furthermore, if you wish to use Java 7, you may need to also use an older version of JBoss.
++Since at least one feature of newer versions of JBoss isn't supported by Java 7 and older versions
++- Java 8's installation was successful.
++- Java 9's installation threw an error at the end, however seemingly was installed correctly.
++
++Verify, after the procedure above, if java installed correctly.
++```
++java -version
++```
++
++##JBoss Installation
++
++To host this service we've been using **JBoss** as the service's server. Other servers might be just as usable as JBoss, however, no tests were made.
++
++First download JBoss:
++```
++wget http://download.jboss.org/wildfly/{version name}/{version name}.tar.gz
++executar .tar
++sudo tar -xvzf {version name}.tar.gz
++```
++
++Then we have to change some variables inside JBoss configurations:
++```
++cd {version name}/bin/
++{text editor of choice} standalone.conf
++```
++
++Inside standalone.conf we might need to change JAVA/JAVA_HOME environment variable.
++Simply point one of these two to the correct java directory.
++```
++JAVA_HOME="/usr"
++```
++or
++```
++JAVA="/usr/bin/java"
++```
++**only one of these needs to be set**
++
++Then execute the standalone script:
++```
++sudo sh ./standalone.sh
++```
++If no exceptions are thrown, your server just went online.
++
++- This procedure was tested with many versions of JBoss, from Wildfly 8 to Wildfly 11, all successful.
++
++##Building .war file.
++
++- Building process was tested with Eclipse's Java EE IDE.
++
++The process is pretty simple.
++Inside the IDE go your project's folder, select it then, either through the toolbar or by right-clicking the folder's name, select the option **Export**.
++From the list that appears in the following windor, choose the Web option, then WAR file option.
++All that's left is to choose in which directory you want your .war file created.
++
++##Transfering .war file.
++
++We are going to base ourselves that FTP is needed to transfer your .war file to your server.
++If it's not necessary or your server already has a FTP Client installed, then continue to the next topic [Deploying .war](ttps://github.com/GustavoCig/Smartbee-Comunication#Deploying-.war)
++
++- If you are running you server inside a VM, you might need to make some changes to it's network configuration to be able to access it directly through FTP:
++
++- Go to the configurations option of your VM, then Network, select Brigde Mode from the dropdown menu, restart your VM if it was running.
++Then try to contact your VM(ping).
++
++Now we are ready to install our FTP software.
++In this tutorial we used the VSFTPD client.
++```
++sudo apt-get install vsftpd
++sudo service vsftpd start
++```
++We need to change vsftp configuration if we want to allow our server to receive files(Write permission).
++```
++{text editor of choice} /etc/vsftpd.conf
++```
++Search for the write permissions and change or uncomment the line.
++
++Now connect to your server thorugh FTP and trasnfer the .war file.
++
++#Deploying .war
++
++With the server online, we need to access it's CLI:
++```
++cd {server file's path}/bin/
++sudo sh ./jboss-cli.sh
++```
++Once inside, all that's left is to use the deploy command followed by your .war file's path:
++```
++deploy {path}/webservice.war
++```
++
++With this you are done configuring your server.
++Now all that's left is for you to seed your webservice's database, since the commands don't function or return empty values in a unseeded database.
++
++##Database
++
++The database used by our service is MySQL.
++To install it, use these commands:
++```
++sudo apt-get install mysql-server
++```
++- Optional: Install the tool mysql-workbench, which allows to more easily manage the database and it's data.
++```
++sudo apt-get install mysql-workbench
++```
++- Configure an user and it's password during installation.
++
++Access to the database is done using the following command:
++```
++mysql>mysql -u {username} -p
++mysql>{password for the user}
++```
++
++Inside the CLI create a databse named smartbee_projeto.
++```
++CREATE DATABASE smartbee_projeto;
++```
++
++All that's left is to configure and seed the database, which can be done by using the scripts also located in this repository:
++- config.sql
++- tes_seed.sql
++In this order.
++```
++mysql>source {file path}/{file name}.sql;
++```
++
++##Postman
++Postman is a HTTP client which can be used to test the service and it's function.
++To install it run the following commands:
++```
++wget https://dl.pstmn.io/download/latest/linux64 -O postman.tar.gz
++sudo tar -xzf postman.tar.gz -C /opt
++sudo ln -s /opt/Postman/Postman /usr/bin/postman
++```
+diff --git a/config.sql b/config.sql
+new file mode 100644
+index 0000000..57a74bf
+--- /dev/null
++++ b/config.sql
+@@ -0,0 +1,195 @@
++USE smartbee_projeto;
++
++CREATE TABLE IF NOT EXISTS `smartbee_projeto`.`users` (
++  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
++  `name` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
++  `email` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
++  `address` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
++  `phone` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
++  `cellphone` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
++  `password` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
++  `confirmed` tinyint(1) NOT NULL DEFAULT '0',
++  `admin` tinyint(1) NOT NULL DEFAULT '0',
++  `last_login` timestamp NULL DEFAULT NULL,
++  `remember_token` varchar(255) NULL DEFAULT NULL,
++  `login_alteracao` int(11) unsigned NULL,
++  `created_at` timestamp NULL DEFAULT NULL,
++  `updated_at` timestamp NULL DEFAULT NULL,
++  `deleted_at` timestamp NULL DEFAULT NULL,
++  PRIMARY KEY (`id`),
++  UNIQUE KEY `users_email_unique` (`email`),
++  KEY `fk_users_login_alteracao` (`login_alteracao`),
++  CONSTRAINT `fk_users_login_alteracao` FOREIGN KEY (`login_alteracao`) REFERENCES `users` (`id`)
++) ENGINE=InnoDB DEFAULT CHARSET=utf8;
++
++CREATE TABLE IF NOT EXISTS `smartbee_projeto`.`apiario` (
++  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
++  `nome` varchar(255) NOT NULL,
++  `endereco` varchar(255) NOT NULL,
++  `latitude` varchar(255) DEFAULT NULL,
++  `longitude` varchar(255) DEFAULT NULL,
++  `descricao` text NOT NULL,
++  `login_cadastro` int(11) unsigned NOT NULL,
++  `login_alteracao` int(11) unsigned NOT NULL,
++  `created_at` timestamp NULL DEFAULT NULL,
++  `updated_at` timestamp NULL DEFAULT NULL,
++  `deleted_at` timestamp NULL DEFAULT NULL,
++  PRIMARY KEY (`id`),
++  KEY `fk_apiario_login_cadastro` (`login_cadastro`),
++  KEY `fk_apiario_login_alteracao` (`login_alteracao`),
++  CONSTRAINT `fk_apiario_login_alteracao` FOREIGN KEY (`login_alteracao`) REFERENCES `users` (`id`),
++  CONSTRAINT `fk_apiario_login_cadastro` FOREIGN KEY (`login_cadastro`) REFERENCES `users` (`id`)
++) ENGINE=InnoDB DEFAULT CHARSET=utf8;
++
++CREATE TABLE IF NOT EXISTS `smartbee_projeto`.`sensor` (
++  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
++  `tipo` varchar(255) NOT NULL,
++  `descricao` varchar(255) NOT NULL,
++  `modelo` varchar(255) NOT NULL,
++  `marca` varchar(255) NOT NULL,
++  `login_cadastro` int(11) unsigned NOT NULL,
++  `login_alteracao` int(11) unsigned NOT NULL,
++  `created_at` timestamp NULL DEFAULT NULL,
++  `updated_at` timestamp NULL DEFAULT NULL,
++  `deleted_at` timestamp NULL DEFAULT NULL,
++  PRIMARY KEY (`id`),
++  KEY `fk_sensor_login_cadastro` (`login_cadastro`),
++  KEY `fk_sensor_login_alteracao` (`login_alteracao`),
++  CONSTRAINT `fk_sensor_login_alteracao` FOREIGN KEY (`login_alteracao`) REFERENCES `users` (`id`),
++  CONSTRAINT `fk_sensor_login_cadastro` FOREIGN KEY (`login_cadastro`) REFERENCES `users` (`id`)
++) ENGINE=InnoDB DEFAULT CHARSET=utf8;
++
++CREATE TABLE IF NOT EXISTS `smartbee_projeto`.`colmeia_estado` (
++  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
++  `nome` varchar(255) NOT NULL,
++  `descricao` text NOT NULL,
++  `login_cadastro` int(11) unsigned NOT NULL,
++  `login_alteracao` int(11) unsigned NOT NULL,
++  `created_at` timestamp NULL DEFAULT NULL,
++  `updated_at` timestamp NULL DEFAULT NULL,
++  `deleted_at` timestamp NULL DEFAULT NULL,
++  PRIMARY KEY (`id`),
++  KEY `fk_colmeia_estado_login_cadastro` (`login_cadastro`),
++  KEY `fk_colmeia_estado_login_alteracao` (`login_alteracao`),
++  CONSTRAINT `fk_colmeia_estado_login_alteracao` FOREIGN KEY (`login_alteracao`) REFERENCES `users` (`id`),
++  CONSTRAINT `fk_colmeia_estado_login_cadastro` FOREIGN KEY (`login_cadastro`) REFERENCES `users` (`id`)
++) ENGINE=InnoDB DEFAULT CHARSET=utf8;
++
++CREATE TABLE IF NOT EXISTS `smartbee_projeto`.`colmeia_base` (
++  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
++  `nome` varchar(255) NOT NULL,
++  `descricao` text NOT NULL,
++  `login_cadastro` int(11) unsigned NOT NULL,
++  `login_alteracao` int(11) unsigned NOT NULL,
++  `created_at` timestamp NULL DEFAULT NULL,
++  `updated_at` timestamp NULL DEFAULT NULL,
++  `deleted_at` timestamp NULL DEFAULT NULL,
++  PRIMARY KEY (`id`),
++  KEY `fk_colmeia_base_login_cadastro` (`login_cadastro`),
++  KEY `fk_colmeia_base_login_alteracao` (`login_alteracao`),
++  CONSTRAINT `fk_colmeia_base_login_alteracao` FOREIGN KEY (`login_alteracao`) REFERENCES `users` (`id`),
++  CONSTRAINT `fk_colmeia_base_login_cadastro` FOREIGN KEY (`login_cadastro`) REFERENCES `users` (`id`)
++) ENGINE=InnoDB DEFAULT CHARSET=utf8;
++
++CREATE TABLE IF NOT EXISTS `smartbee_projeto`.`colmeia_origem` (
++  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
++  `nome` varchar(255) NOT NULL,
++  `descricao` text NOT NULL,
++  `login_cadastro` int(11) unsigned NOT NULL,
++  `login_alteracao` int(11) unsigned NOT NULL,
++  `created_at` timestamp NULL DEFAULT NULL,
++  `updated_at` timestamp NULL DEFAULT NULL,
++  `deleted_at` timestamp NULL DEFAULT NULL,
++  PRIMARY KEY (`id`),
++  KEY `fk_colmeia_origem_login_cadastro` (`login_cadastro`),
++  KEY `fk_colmeia_origem_login_alteracao` (`login_alteracao`),
++  CONSTRAINT `fk_colmeia_origem_login_alteracao` FOREIGN KEY (`login_alteracao`) REFERENCES `users` (`id`),
++  CONSTRAINT `fk_colmeia_origem_login_cadastro` FOREIGN KEY (`login_cadastro`) REFERENCES `users` (`id`)
++) ENGINE=InnoDB DEFAULT CHARSET=utf8;
++
++CREATE TABLE IF NOT EXISTS `smartbee_projeto`.`colmeia_tipo` (
++  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
++  `nome` varchar(255) NOT NULL,
++  `descricao` text NOT NULL,
++  `login_cadastro` int(11) unsigned NOT NULL,
++  `login_alteracao` int(11) unsigned NOT NULL,
++  `created_at` timestamp NULL DEFAULT NULL,
++  `updated_at` timestamp NULL DEFAULT NULL,
++  `deleted_at` timestamp NULL DEFAULT NULL,
++  PRIMARY KEY (`id`),
++  KEY `fk_colmeia_tipo_login_cadastro` (`login_cadastro`),
++  KEY `fk_colmeia_tipo_login_alteracao` (`login_alteracao`),
++  CONSTRAINT `fk_colmeia_tipo_login_alteracao` FOREIGN KEY (`login_alteracao`) REFERENCES `users` (`id`),
++  CONSTRAINT `fk_colmeia_tipo_login_cadastro` FOREIGN KEY (`login_cadastro`) REFERENCES `users` (`id`)
++) ENGINE=InnoDB DEFAULT CHARSET=utf8;
++
++CREATE TABLE IF NOT EXISTS `smartbee_projeto`.`password_resets` (
++  `email` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
++  `token` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
++  `created_at` timestamp NULL DEFAULT NULL,
++  KEY `password_resets_email_index` (`email`)
++) ENGINE=InnoDB DEFAULT CHARSET=utf8;
++
++
++CREATE TABLE IF NOT EXISTS `smartbee_projeto`.`colmeia` (
++  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
++  `nome` varchar(255) NOT NULL,
++  `caixilho` int(11) NOT NULL,
++  `latitude` varchar(255) DEFAULT NULL,
++  `longitude` varchar(255) DEFAULT NULL,
++  `apiario_id` int(11) unsigned NOT NULL,
++  `colmeia_tipo_id` int(11) unsigned NOT NULL,
++  `colmeia_base_id` int(11) unsigned NOT NULL,
++  `colmeia_origem_id` int(11) unsigned NOT NULL,
++  `colmeia_estado_id` int(11) unsigned NOT NULL,
++  `login_cadastro` int(11) unsigned NOT NULL,
++  `login_alteracao` int(11) unsigned NOT NULL,
++  `created_at` timestamp NULL DEFAULT NULL,
++  `updated_at` timestamp NULL DEFAULT NULL,
++  `deleted_at` timestamp NULL DEFAULT NULL,
++  PRIMARY KEY (`id`),
++  KEY `fk_colmeia_apiario` (`apiario_id`),
++  KEY `fk_colmeia_tipo` (`colmeia_tipo_id`),
++  KEY `fk_colmeia_base` (`colmeia_base_id`),
++  KEY `fk_colmeia_origem` (`colmeia_origem_id`),
++  KEY `fk_colmeia_estado` (`colmeia_estado_id`),
++  KEY `fk_colmeia_cadastro` (`login_cadastro`),
++  KEY `fk_colmeia_alteracao` (`login_alteracao`),
++  CONSTRAINT `fk_colmeia_alteracao` FOREIGN KEY (`login_alteracao`) REFERENCES `users` (`id`),
++  CONSTRAINT `fk_colmeia_cadastro` FOREIGN KEY (`login_cadastro`) REFERENCES `users` (`id`),
++  CONSTRAINT `fk_colmeia_base` FOREIGN KEY (`colmeia_base_id`) REFERENCES `colmeia_base` (`id`),
++  CONSTRAINT `fk_colmeia_origem` FOREIGN KEY (`colmeia_origem_id`) REFERENCES `colmeia_origem` (`id`),
++  CONSTRAINT `fk_colmeia_tipo` FOREIGN KEY (`colmeia_tipo_id`) REFERENCES `colmeia_tipo` (`id`),
++  CONSTRAINT `fk_colmeia_estado` FOREIGN KEY (`colmeia_estado_id`) REFERENCES `colmeia_estado` (`id`),
++  CONSTRAINT `fk_colmeia_apiario` FOREIGN KEY (`apiario_id`) REFERENCES `apiario` (`id`)
++) ENGINE=InnoDB DEFAULT CHARSET=utf8;
++
++CREATE TABLE IF NOT EXISTS `smartbee_projeto`.`colmeia_coleta` (
++  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
++  `colmeia_id` int(11) unsigned NOT NULL,
++  `sensor_id` int(11) unsigned NOT NULL,
++  `valor` text NOT NULL,
++  `created_at` timestamp NULL DEFAULT NULL,
++  `updated_at` timestamp NULL DEFAULT NULL,
++  `deleted_at` timestamp NULL DEFAULT NULL,
++  PRIMARY KEY (`id`),
++  KEY `fk_colmeia_coleta_colmeia_id` (`colmeia_id`),
++  KEY `fk_colmeia_coleta_sensor_id` (`sensor_id`),
++  CONSTRAINT `fk_colmeia_coleta_colmeia_id` FOREIGN KEY (`colmeia_id`) REFERENCES `colmeia` (`id`),
++  CONSTRAINT `fk_colmeia_coleta_sensor_id` FOREIGN KEY (`sensor_id`) REFERENCES `sensor` (`id`)
++) ENGINE=InnoDB DEFAULT CHARSET=utf8;
++
++
++CREATE TABLE IF NOT EXISTS `smartbee_projeto`.`colmeia_fundo` (
++  `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
++  `nome` VARCHAR(255) NOT NULL,
++  `descricao` TEXT NOT NULL,
++  `login_cadastro` INT(11) UNSIGNED NOT NULL,
++  `login_alteracao` INT(11) UNSIGNED NOT NULL,
++  `created_at` TIMESTAMP NULL DEFAULT NULL,
++  `updated_at` TIMESTAMP NULL DEFAULT NULL,
++  `deleted_at` TIMESTAMP NULL DEFAULT NULL,
++  PRIMARY KEY (`id`),
++  INDEX `fk_colmeia_fundo_login_cadastro` (`login_cadastro` ASC),
++  INDEX `fk_colmeia_fundo_login_alteracao` (`login_alteracao` ASC))
++ENGINE = InnoDB;
+diff --git a/test_seed.sql b/test_seed.sql
+new file mode 100644
+index 0000000..8abf743
+--- /dev/null
++++ b/test_seed.sql
+@@ -0,0 +1,33 @@
++USE `smartbee_projeto`;
++
++
++INSERT INTO users VALUES(1, 'teste','teste@teste','great','2629','9296','8D969EEF6ECAD3C29A3A629280E686CF0C3F5D5A86AFF3CA12020C923ADC6C92',1,0,NULL,NULL,NULL,NULL,NULL,NULL);
++
++INSERT INTO apiario VALUES(1,'apiario 1','great','120','120','teste',1,1,NULL,NULL,NULL);
++
++INSERT INTO sensor VALUES(1,'Temperatura','Medir temperatura interna da colmeia','DHT22','SparkFun Eletronic',1,1,NULL,NULL,NULL);
++
++INSERT INTO sensor VALUES(2,'Umidade','Medir umidade interna da colmeia','DHT22','SparkFun Eletronic',1,1,NULL,NULL,NULL);
++
++INSERT INTO sensor VALUES(3,'Tensão Sensores','Medir a tensão da bateria utilizada pelos sensores nas colmeias','0-25V(DC)','MH-Eletronic',1,1,NULL,NULL,NULL);
++
++INSERT INTO sensor VALUES(4,'Tensão Repetidores','Medir tensão da bateria utilizada pelos repetidores','0-25V(DC)','MH--Eletronic',1,1,NULL,NULL,NULL);
++
++INSERT INTO sensor VALUES(5,'Temperatura','Medir temperatura externa, esse sensor ficará posicionado do lado de fora do apiário e conectado ao sensor','DHT22','SparkFun Eletronic',1,1,NULL,NULL,NULL);
++
++INSERT INTO sensor VALUES(6,'Umidade','Medir umidade externa, esse sensor ficará posicionado do lado de fora do apiário e conectado ao sensor','DHT22','SparkFun Eletronic',1,1,NULL,NULL,NULL);
++
++INSERT INTO sensor VALUES(7,'MOdulo SIM','Sensor para enviar as amostras a nuvem utilizando tecnologia GPRS. É importante monitorar a tensão da bateria utilizada para monitorar esse sensor','SIM800L','SIM Com',1,1,NULL,NULL,NULL);
++
++INSERT INTO colmeia_estado VALUES(1,'teste','.',1,1,NULL,NULL,NULL);
++
++INSERT INTO colmeia_base VALUES(1,'teste','.',1,1,NULL,NULL,NULL);
++
++INSERT INTO colmeia_origem VALUES(1,'teste','.',1,1,NULL,NULL,NULL);
++
++INSERT INTO colmeia_tipo VALUES(1,'teste','.',1,1,NULL,NULL,NULL);
++
++INSERT INTO colmeia_fundo VALUES(1,'teste','.',1,1,NULL,NULL,NULL);
++
++INSERT INTO colmeia VALUES(1,'teste',1,'120','120',1,1,1,1,1,1,1,NULL,NULL,NULL);
++
+-- 
+2.7.4
+
