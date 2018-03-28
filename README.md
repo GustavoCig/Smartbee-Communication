@@ -1,7 +1,7 @@
 # Smartbee-Comunication
 
 Short installation guide on how to get your smartbee webservice up and running.
-If you plan on hosting your webservice in a VM, please proceed to the topic below [VM Configuration](https://github.com/GustavoCig/Smartbee-Comunication#VM-Configuration), else, proceed to the topic [Java Configuration](https://github.com/GustavoCig/Smartbee-Comunication#Java-Configuration).
+If you plan on hosting your webservice in a VM, please proceed to the topic below [VM Configuration](https://github.com/GustavoCig/Smartbee-Comunication#vm-configuration), else, proceed to the topic [Java Configuration](https://github.com/GustavoCig/Smartbee-Comunication#java-configuration).
 
 ## VM Configuration
 
@@ -94,7 +94,7 @@ All that's left is to choose in which directory you want your .war file created.
 ## Transfering .war file.
 
 We are going to base ourselves that FTP is needed to transfer your .war file to your server.
-If it's not necessary or your server already has a FTP Client installed, then continue to the next topic [Deploying .war](ttps://github.com/GustavoCig/Smartbee-Comunication#Deploying-.war)
+If it's not necessary or your server already has a FTP Client installed, then continue to the next topic [Deploying .war](ttps://github.com/GustavoCig/Smartbee-Comunication#deploying-.war)
 
 - If you are running you server inside a VM, you might need to make some changes to it's network configuration to be able to access it directly through FTP:
 
@@ -156,7 +156,7 @@ CREATE DATABASE smartbee_projeto;
 
 All that's left is to configure and seed the database, which can be done by using the scripts also located in this repository:
 - config.sql
-- tes_seed.sql
+- test_seed.sql
 In this order.
 ```
 mysql>source {file path}/{file name}.sql;
