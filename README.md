@@ -94,7 +94,7 @@ All that's left is to choose in which directory you want your .war file created.
 ## Transfering .war file.
 
 We are going to base ourselves that FTP is needed to transfer your .war file to your server.
-If it's not necessary or your server already has a FTP Client installed, then continue to the next topic [Deploying .war](ttps://github.com/GustavoCig/Smartbee-Comunication#deploying-.war)
+If it's not necessary or your server already has a FTP Client installed, then continue to the next topic [Deploying .war](ttps://github.com/GustavoCig/Smartbee-Comunication#deploying-war)
 
 - If you are running you server inside a VM, you might need to make some changes to it's network configuration to be able to access it directly through FTP:
 
@@ -113,9 +113,9 @@ We need to change vsftp configuration if we want to allow our server to receive 
 ```
 Search for the write permissions and change or uncomment the line.
 
-Now connect to your server thorugh FTP and trasnfer the .war file.
+Now connect to your server thorugh FTP and transfer the .war file.
 
-# Deploying .war
+## Deploying .war
 
 With the server online, we need to access it's CLI:
 ```
